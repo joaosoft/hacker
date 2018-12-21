@@ -138,3 +138,65 @@ func (d *Dependency) Reset() error {
 
 	return nil
 }
+
+func (d *Dependency) Add() error {
+	d.logger.Debug("executing Add")
+
+	var err error
+	loadedImports := make(map[string]bool)
+	installedImports := make(Imports)
+
+	defer func() {
+		if err != nil {
+			d.doUndoBackupVendor()
+		}
+	}()
+
+	// backup old vendor folder
+	if err = d.doBackupVendor(); err != nil {
+		return err
+	}
+
+	dir, _ := os.Getwd()
+	if err = d.doGet(dir, loadedImports, installedImports, false, false); err != nil {
+		return err
+	} else {
+		// save generated imports
+		if err = d.doSaveImports(installedImports); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (d *Dependency) Remove() error {
+	d.logger.Debug("executing Remove")
+
+	var err error
+	loadedImports := make(map[string]bool)
+	installedImports := make(Imports)
+
+	defer func() {
+		if err != nil {
+			d.doUndoBackupVendor()
+		}
+	}()
+
+	// backup old vendor folder
+	if err = d.doBackupVendor(); err != nil {
+		return err
+	}
+
+	dir, _ := os.Getwd()
+	if err = d.doGet(dir, loadedImports, installedImports, false, false); err != nil {
+		return err
+	} else {
+		// save generated imports
+		if err = d.doSaveImports(installedImports); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}

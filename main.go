@@ -40,6 +40,16 @@ func main() {
 			panic(err)
 			os.Exit(1)
 		}
+	case CmdDependencyAdd:
+		if err := d.Add(); err != nil {
+			panic(err)
+			os.Exit(1)
+		}
+	case CmdDependencyRemove:
+		if err := d.Remove(); err != nil {
+			panic(err)
+			os.Exit(1)
+		}
 	default:
 		fmt.Printf("invalid command! available commands are [%s, %s, %s]", CmdDependencyGet, CmdDependencyUpdate, CmdDependencyReset)
 		os.Exit(1)

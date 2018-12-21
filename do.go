@@ -76,6 +76,48 @@ func (d *Dependency) doGet(dir string, loadedImports map[string]bool, installedI
 	return nil
 }
 
+func (d *Dependency) doAdd(newImport string, dir string, loadedImports map[string]bool, installedImports Imports, isVendorPackage bool, update bool) error {
+	sync := Memory{
+		generatedImports: make(Imports),
+		lockedImports:    make(Imports),
+		internalImports:  make(Imports),
+		externalImports:  make(Imports),
+		loadedImports:    loadedImports,
+		installedImports: installedImports,
+		update:           update,
+	}
+
+	sync.loadedImports[newImport] = true
+	sync.loadedImports[newImport] = true
+
+	// load locked imports
+	if err := d.doLoadLockedImports(dir, &sync); err != nil {
+		return err
+	}
+
+	// load generated imports
+	if err := d.doLoadGeneratedImports(dir, &sync); err != nil {
+		return err
+	}
+
+	// merge with locked imports
+	if err := d.doMergeWithLockedImports(&sync); err != nil {
+		return err
+	}
+
+	// merge with generated imports
+	if err := d.doMergeWithGeneratedImports(&sync); err != nil {
+		return err
+	}
+
+	// download imports
+	if err := d.doDownloadImports(&sync); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (d *Dependency) doClearLock() error {
 	if file, err := os.OpenFile(LockImportFile, os.O_RDWR, 0666); err != nil {
 		d.logger.Infof("creating file [%s]", LockImportFile)
