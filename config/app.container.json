@@ -1,12 +1,14 @@
 {
   "dependency": {
     "path": "./",
+    "protocol": "https",
     "log": {
       "level": "debug"
     }
   },
   "manager": {
     "path": "./",
+    "protocol": "https",
     "log": {
       "level": "none"
     }

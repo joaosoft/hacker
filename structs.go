@@ -7,10 +7,14 @@ type Protocol string
 type Memory struct {
 	generatedImports Imports
 	lockedImports    Imports
+
 	internalImports  Imports
 	externalImports  Imports
+
 	loadedImports    map[string]bool
+
 	installedImports Imports
+
 	update           bool
 }
 

@@ -13,8 +13,9 @@ type AppConfig struct {
 
 // DependencyConfig ...
 type DependencyConfig struct {
-	Path string `json:"path"`
-	Log  struct {
+	Path     string `json:"path"`
+	Protocol string `json:"protocol"`
+	Log      struct {
 		Level string `json:"level"`
 	} `json:"log"`
 }

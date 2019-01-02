@@ -76,6 +76,149 @@ func (d *Dependency) doGet(dir string, loadedImports map[string]bool, installedI
 	return nil
 }
 
+func (d *Dependency) doAdd(loadedImports map[string]bool, installedImports Imports, newImport string) error {
+	sync := Memory{
+		generatedImports: make(Imports),
+		lockedImports:    make(Imports),
+		internalImports:  make(Imports),
+		externalImports:  make(Imports),
+		loadedImports:    loadedImports,
+		installedImports: installedImports,
+		update:           true,
+	}
+
+	dir, _ := os.Getwd()
+	sync.loadedImports[newImport] = true
+
+	if !strings.Contains(newImport, ".") {
+		return d.logger.Debugf("internal dependency [%s] cannot be added", newImport).ToError()
+	} else {
+		d.logger.Debugf("adding external dependency [%s]", newImport)
+
+		host, user, project, packag, ssh, https, path, vendor, save, err := d.doGetRepositoryInfo(newImport)
+		if err != nil {
+			d.logger.Infof("repository ignored [%s]", newImport)
+			return nil
+		}
+
+		sync.externalImports[fmt.Sprintf("%s%s", path, packag)] = &Import{
+			internal: Internal{
+				repo: Repo{
+					host:    host,
+					user:    user,
+					project: project,
+					packag:  packag,
+					ssh:     ssh,
+					https:   https,
+					path:    path,
+					vendor:  vendor,
+					save:    save,
+				},
+			},
+		}
+	}
+
+	// load locked imports
+	if err := d.doLoadLockedImports(dir, &sync); err != nil {
+		return err
+	}
+
+	// load generated imports
+	if err := d.doLoadGeneratedImports(dir, &sync); err != nil {
+		return err
+	}
+	sync.installedImports = sync.generatedImports
+
+	// merge with locked imports
+	if err := d.doMergeWithLockedImports(&sync); err != nil {
+		return err
+	}
+
+	// merge with generated imports
+	if err := d.doMergeWithGeneratedImports(&sync); err != nil {
+		return err
+	}
+
+	// download imports
+	if err := d.doDownloadImports(&sync); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (d *Dependency) doRemove(loadedImports map[string]bool, installedImports Imports, removeImport string) error {
+	sync := Memory{
+		generatedImports: make(Imports),
+		lockedImports:    make(Imports),
+		internalImports:  make(Imports),
+		externalImports:  make(Imports),
+		loadedImports:    loadedImports,
+		installedImports: installedImports,
+		update:           true,
+	}
+
+	dir, _ := os.Getwd()
+
+	if !strings.Contains(removeImport, ".") {
+		return d.logger.Debugf("internal dependency [%s] cannot be removed", removeImport).ToError()
+	}
+
+	// load locked imports
+	if err := d.doLoadLockedImports(dir, &sync); err != nil {
+		return err
+	}
+
+	// load generated imports
+	if err := d.doLoadGeneratedImports(dir, &sync); err != nil {
+		return err
+	}
+
+	if _, ok := sync.generatedImports[removeImport]; !ok {
+		return d.logger.Debugf("dependency [%s] isn't part of the vendor", removeImport).ToError()
+	}
+
+	sync.installedImports = sync.generatedImports
+
+	// merge with locked imports
+	if err := d.doMergeWithLockedImports(&sync); err != nil {
+		return err
+	}
+
+	// merge with generated imports
+	if err := d.doMergeWithGeneratedImports(&sync); err != nil {
+		return err
+	}
+
+	// delete import
+	if _, ok := sync.lockedImports[removeImport]; ok {
+		delete(sync.lockedImports, removeImport)
+	}
+
+	if _, ok := sync.installedImports[removeImport]; ok {
+		delete(sync.installedImports, removeImport)
+	}
+
+	if err := d.doDeleteImport(removeImport); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (d *Dependency) doDeleteImport(removeImport string) error {
+	vendorPath := fmt.Sprintf("./vendor/%s", removeImport)
+	_, err := os.Stat(vendorPath)
+	if err != nil {
+		return d.logger.Warnf("error removing import %s", vendorPath).ToError()
+	}
+
+	os.Remove(vendorPath)
+	d.logger.Warnf("import %s removed", vendorPath)
+
+	return nil
+}
+
 func (d *Dependency) doClearLock() error {
 	if file, err := os.OpenFile(LockImportFile, os.O_RDWR, 0666); err != nil {
 		d.logger.Infof("creating file [%s]", LockImportFile)
@@ -221,7 +364,7 @@ func (d *Dependency) doGetFileImports(dir string, sync *Memory) error {
 		if !strings.Contains(imprt.Path.Value, ".") {
 			d.logger.Debugf("adding internal dependency [%s]", name)
 
-			sync.internalImports[name] = &Import{}
+			sync.internalImports[name] = &Import{internal: Internal{repo: Repo{path: imprt.Path.Value}}}
 		} else {
 			d.logger.Debugf("adding external dependency [%s]", name)
 

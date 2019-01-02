@@ -50,6 +50,8 @@ func NewDependency(options ...DependencyOption) (*Dependency, error) {
 	}
 
 	service.config = &appConfig.Dependency
+	service.vcs.protocol = Protocol(appConfig.Dependency.Protocol)
+
 	service.Reconfigure(options...)
 
 	return service, nil
@@ -134,6 +136,44 @@ func (d *Dependency) Reset() error {
 
 	if err := d.Get(); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (d *Dependency) Add(newImport string) error {
+	d.logger.Debug("executing Add")
+
+	var err error
+	loadedImports := make(map[string]bool)
+	installedImports := make(Imports)
+
+	if err = d.doAdd(loadedImports, installedImports, newImport); err != nil {
+		return err
+	} else {
+		// save generated imports
+		if err = d.doSaveImports(installedImports); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (d *Dependency) Remove(removeImport string) error {
+	d.logger.Debug("executing Add")
+
+	var err error
+	loadedImports := make(map[string]bool)
+	installedImports := make(Imports)
+
+	if err = d.doRemove(loadedImports, installedImports, removeImport); err != nil {
+		return err
+	} else {
+		// save generated imports
+		if err = d.doSaveImports(installedImports); err != nil {
+			return err
+		}
 	}
 
 	return nil

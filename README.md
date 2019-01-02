@@ -9,6 +9,8 @@ This dependency manager is being used in all my personal projects :)
 ## With support for
 * Get, to get the dependencies
 * Reset, to delete the user locked dependencies and Get dependencies
+* Add <dependency>, to add a new dependency
+* Remove <dependency>, to remove a existing dependency
 
 >### Go
 ```
@@ -26,6 +28,12 @@ dependency update
 
 // delete lock configuration
 dependency reset
+
+// add a new dependency (just takes in consideration the import-lock.yml)
+dependency add github/joaosoft/web
+
+// remove a dependency (just takes in consideration the import-lock.yml)
+dependency remove github/joaosoft/web
 ```
 
 > Files

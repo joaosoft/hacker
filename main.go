@@ -7,18 +7,13 @@ import (
 
 func main() {
 	cmd := CmdDependencyGet
-	protocol := ProtocolHTTPS
 
 	args := os.Args
 	if len(args) > 1 {
 		cmd = CmdDependency(args[1])
 	}
 
-	if len(args) > 2 {
-		protocol = Protocol(args[2])
-	}
-
-	d, err := NewDependency(WithProtocol(protocol))
+	d, err := NewDependency()
 	if err != nil {
 		panic(err)
 		os.Exit(1)
@@ -37,6 +32,25 @@ func main() {
 		}
 	case CmdDependencyReset:
 		if err := d.Reset(); err != nil {
+			panic(err)
+			os.Exit(1)
+		}
+	case CmdDependencyAdd:
+		var newImport string
+		if len(args) > 2 {
+			newImport = args[2]
+		}
+
+		if err := d.Add(newImport); err != nil {
+			panic(err)
+			os.Exit(1)
+		}
+	case CmdDependencyRemove:
+		var removeImport string
+		if len(args) > 2 {
+			removeImport = args[2]
+		}
+		if err := d.Remove(removeImport); err != nil {
 			panic(err)
 			os.Exit(1)
 		}

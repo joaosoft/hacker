@@ -4,6 +4,8 @@ const (
 	CmdDependencyGet    CmdDependency = "get"
 	CmdDependencyUpdate CmdDependency = "update"
 	CmdDependencyReset  CmdDependency = "reset"
+	CmdDependencyAdd    CmdDependency = "add"
+	CmdDependencyRemove CmdDependency = "remove"
 
 	GenImportFile  = "import-gen.yml"
 	LockImportFile = "import-lock.yml"
