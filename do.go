@@ -387,12 +387,12 @@ func (d *Dependency) doGetFileImports(dir string, sync *Memory) error {
 
 			if host, user, project, packag, ssh, https, path, vendor, save, err := d.doGetRepositoryInfo(name); err != nil {
 				d.logger.Infof("repository ignored [%s]", name)
-				return nil
+				continue
 			} else {
 				if newPackage != "" {
 					if _, _, _, _, ssh, https, _, _, _, err = d.doGetRepositoryInfo(newPackage); err != nil {
 						d.logger.Infof("repository ignored [%s]", name)
-						return nil
+						continue
 					}
 				}
 				if _, ok := sync.loadedImports[fmt.Sprintf("%s%s", path, packag)]; !ok {
