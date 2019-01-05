@@ -44,13 +44,14 @@ func NewDependency(options ...DependencyOption) (*Dependency, error) {
 		service.logger.Warn(err)
 	} else {
 		service.pm.AddConfig("config_app", simpleConfig)
+
 		level, _ := logger.ParseLevel(appConfig.Dependency.Log.Level)
 		service.logger.Debugf("setting log level to %s", level)
 		service.logger.Reconfigure(logger.WithLevel(level))
-	}
 
-	service.config = &appConfig.Dependency
-	service.vcs.protocol = Protocol(appConfig.Dependency.Protocol)
+		service.config = &appConfig.Dependency
+		service.vcs.protocol = Protocol(appConfig.Dependency.Protocol)
+	}
 
 	service.Reconfigure(options...)
 
