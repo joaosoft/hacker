@@ -50,7 +50,10 @@ func NewDependency(options ...DependencyOption) (*Dependency, error) {
 		service.logger.Reconfigure(logger.WithLevel(level))
 
 		service.config = &appConfig.Dependency
-		service.vcs.protocol = Protocol(appConfig.Dependency.Protocol)
+		protocol := Protocol(appConfig.Dependency.Protocol)
+		if protocol != "" {
+			service.vcs.protocol = protocol
+		}
 	}
 
 	service.Reconfigure(options...)
