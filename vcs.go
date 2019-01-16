@@ -287,6 +287,10 @@ func (v *Vcs) Checkout(path string, imprt *Import) error {
 		branch = imprt.Revision
 	}
 
+	if err := v.Reset(path, branch); err != nil {
+		return err
+	}
+
 	v.logger.Infof("checkout repository [%s] branch [%s]", imprt.internal.repo.path, branch)
 	gitArgs := []string{
 		"checkout",
@@ -298,6 +302,26 @@ func (v *Vcs) Checkout(path string, imprt *Import) error {
 
 	if stderr, err := cmd.CombinedOutput(); err != nil {
 		return v.logger.Errorf("error executing [git checkout] command %s", string(stderr)).ToError()
+	}
+
+	return nil
+}
+
+func (v *Vcs) Reset(path string, branch string) error {
+	v.logger.Debugf("executing Reset")
+
+	v.logger.Infof("reset --hard repository [%s] branch [%s]", path, branch)
+	gitArgs := []string{
+		"reset",
+		"--hard",
+		branch,
+	}
+
+	cmd := exec.Command("git", gitArgs...)
+	cmd.Dir = path
+
+	if stderr, err := cmd.CombinedOutput(); err != nil {
+		return v.logger.Errorf("error executing [git reset --hard] command %s", string(stderr)).ToError()
 	}
 
 	return nil
