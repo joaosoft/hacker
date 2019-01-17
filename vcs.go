@@ -188,7 +188,7 @@ func (v *Vcs) Clone(imprt *Import) error {
 		repo = imprt.internal.repo.ssh
 	}
 
-	v.logger.Infof("downloading repository with %s protocol [%s] to [%s]", protocol, repo, pathCachedRepo)
+	v.logger.Infof("downloading repository [%s] branch [%s] with %s protocol [%s] to [%s]", imprt.internal.repo.path, imprt.Branch, protocol, repo, pathCachedRepo)
 	gitArgs = []string{
 		"clone",
 		"--recursive",
