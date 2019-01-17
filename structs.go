@@ -8,14 +8,14 @@ type Memory struct {
 	generatedImports Imports
 	lockedImports    Imports
 
-	internalImports  Imports
-	externalImports  Imports
+	internalImports Imports
+	externalImports Imports
 
-	loadedImports    map[string]bool
+	loadedImports map[string]bool
 
 	installedImports Imports
 
-	update           bool
+	update bool
 }
 
 type Import struct {
@@ -27,7 +27,8 @@ type Import struct {
 }
 
 type Internal struct {
-	repo Repo
+	original string
+	repo     Repo
 }
 
 type Repo struct {

@@ -103,6 +103,7 @@ func (d *Dependency) doAdd(loadedImports map[string]bool, installedImports Impor
 
 		sync.externalImports[fmt.Sprintf("%s%s", path, packag)] = &Import{
 			internal: Internal{
+				original: newImport,
 				repo: Repo{
 					host:    host,
 					user:    user,
@@ -364,7 +365,14 @@ func (d *Dependency) doGetFileImports(dir string, sync *Memory) error {
 		if !strings.Contains(imprt.Path.Value, ".") {
 			d.logger.Debugf("adding internal dependency [%s]", name)
 
-			sync.internalImports[name] = &Import{internal: Internal{repo: Repo{path: imprt.Path.Value}}}
+			sync.internalImports[name] = &Import{
+				internal: Internal{
+					original: name,
+					repo: Repo{
+						path: name,
+					},
+				},
+			}
 		} else {
 			d.logger.Debugf("adding external dependency [%s]", name)
 
@@ -398,6 +406,7 @@ func (d *Dependency) doGetFileImports(dir string, sync *Memory) error {
 				if _, ok := sync.loadedImports[fmt.Sprintf("%s%s", path, packag)]; !ok {
 					sync.externalImports[fmt.Sprintf("%s%s", path, packag)] = &Import{
 						internal: Internal{
+							original: newPackage,
 							repo: Repo{
 								host:    host,
 								user:    user,
@@ -560,7 +569,7 @@ func (d *Dependency) doGetRepositoryInfo(name string) (string, string, string, s
 		} else {
 			https = fmt.Sprintf("https://%s/%s", host, user)
 		}
-		path = fmt.Sprintf("%s/%s/%s", host, user, project)
+		path = fmt.Sprintf("%s/%s/%s", host, project, packag)
 
 	} else if len(nSplit) == 2 {
 
