@@ -33,7 +33,6 @@ func main() {
 			select {
 			case <-termChan:
 				logger.Info("received term signal")
-				logger.Info("HERE term signal")
 				d.doUndoBackupVendor()
 				os.Exit(0)
 
