@@ -3,14 +3,14 @@
     "path": "./",
     "protocol": "https",
     "log": {
-      "level": "info"
+      "level": "error"
     }
   },
   "manager": {
     "path": "./",
     "protocol": "https",
     "log": {
-      "level": "info"
+      "level": "error"
     }
   }
 }
