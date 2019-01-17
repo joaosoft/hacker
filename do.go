@@ -571,10 +571,6 @@ func (d *Dependency) doGetRepositoryInfo(name string) (string, string, string, s
 		}
 		path = fmt.Sprintf("%s/%s/%s", host, user, project)
 
-		if packag != "" {
-			path += fmt.Sprintf("/%s", packag)
-		}
-
 	} else if len(nSplit) == 2 {
 
 		host = nSplit[0]
