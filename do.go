@@ -592,11 +592,12 @@ func (d *Dependency) doBackupVendor() error {
 }
 
 func (d *Dependency) doUndoBackupVendor() error {
-	os.Remove(d.vendor)
+	RemoveAll(d.vendor)
 	if _, err := os.Stat(d.bkVendor); err == nil {
 		d.logger.Debugf("executing Undo Backup Vendor to [%s]", d.bkVendor)
-		os.Rename(d.bkVendor, d.vendor)
+		err = os.Rename(d.bkVendor, d.vendor)
 	}
+
 	return nil
 }
 

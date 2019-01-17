@@ -67,7 +67,7 @@ func (v *Vcs) ClearCache(dir string) error {
 	v.logger.Debugf("executing Clear Cache of [%s]", dir)
 
 	if _, err := os.Stat(dir); err != nil {
-		os.Remove(dir)
+		RemoveAll(dir)
 	}
 
 	return v.StartCache()
@@ -169,20 +169,13 @@ func (v *Vcs) CopyDependency(sync *Memory, imprt *Import, copyTo string, update 
 
 func (v *Vcs) Clone(imprt *Import) error {
 
-	branch := imprt.Branch
-	if imprt.Version != "" {
-		branch = imprt.Version
-	} else if imprt.Revision != "" {
-		branch = imprt.Revision
-	}
-
 	var gitArgs []string
 	v.logger.Debugf("executing Clone for [%s]", imprt.internal.repo.path)
 
 	pathCachedRepo := fmt.Sprintf("%s/%s", v.cache.path, imprt.internal.repo.save)
 
 	// remove cached temporary folder to prevent errors
-	os.Remove(imprt.internal.repo.save)
+	RemoveAll(imprt.internal.repo.save)
 
 	var repo string
 	var protocol Protocol
@@ -201,19 +194,32 @@ func (v *Vcs) Clone(imprt *Import) error {
 		"--recursive",
 		"--shallow-submodules",
 	}
-	if branch != "" {
-		gitArgs = append(gitArgs, "--branch", branch)
+	if imprt.Branch != "" {
+		gitArgs = append(gitArgs, "--branch", imprt.Branch)
 	}
 	gitArgs = append(gitArgs, repo, pathCachedRepo)
 
 	cmd := exec.Command("git", gitArgs...)
 
 	if stderr, err := cmd.CombinedOutput(); err != nil {
-		os.Remove(imprt.internal.repo.save)
+		RemoveAll(imprt.internal.repo.save)
 		return v.logger.Warnf("error executing [git clone] command %s", string(stderr)).ToError()
 	}
 
 	v.logger.Infof("git clone completed for [%s]", imprt.internal.repo.save)
+
+	var version string
+	if imprt.Version != "" {
+		version = imprt.Version
+	} else if imprt.Revision != "" {
+		version = imprt.Revision
+	}
+
+	if version != "" {
+		if err := v.Checkout(pathCachedRepo, imprt); err != nil {
+			return err
+		}
+	}
 
 	return nil
 }
@@ -489,7 +495,7 @@ func (v *Vcs) doBackupConfig() (string, error) {
 }
 
 func (v *Vcs) doUndoBackupConfig(bkName string) error {
-	os.Remove(v.cache.config)
+	RemoveAll(v.cache.config)
 	if _, err := os.Stat(v.cache.config); err == nil {
 		v.logger.Debugf("executing Undo Backup Vendor to [%s]", v.cache.config)
 		os.Rename(bkName, v.cache.config)

@@ -11,6 +11,7 @@ import (
 
 type Dependency struct {
 	config        *DependencyConfig
+	quit          chan int
 	isLogExternal bool
 	pm            *manager.Manager
 	logger        logger.ILogger
@@ -28,6 +29,7 @@ func NewDependency(options ...DependencyOption) (*Dependency, error) {
 	}
 
 	service := &Dependency{
+		quit:   make(chan int),
 		pm:     pm,
 		logger: log,
 		vcs:    vcs,

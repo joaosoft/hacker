@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"io"
 
@@ -151,6 +152,25 @@ func CopyDir(src string, dst string) error {
 			if err = CopyFile(srcfp, dstfp); err != nil {
 				fmt.Println(err)
 			}
+		}
+	}
+	return nil
+}
+
+func RemoveAll(dir string) error {
+	d, err := os.Open(dir)
+	if err != nil {
+		return err
+	}
+	defer d.Close()
+	names, err := d.Readdirnames(-1)
+	if err != nil {
+		return err
+	}
+	for _, name := range names {
+		err = RemoveAll(filepath.Join(dir, name))
+		if err != nil {
+			return err
 		}
 	}
 	return nil
