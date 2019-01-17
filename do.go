@@ -569,7 +569,11 @@ func (d *Dependency) doGetRepositoryInfo(name string) (string, string, string, s
 		} else {
 			https = fmt.Sprintf("https://%s/%s", host, user)
 		}
-		path = fmt.Sprintf("%s/%s/%s", host, project, packag)
+		path = fmt.Sprintf("%s/%s/%s", host, user, project)
+
+		if packag != "" {
+			path += fmt.Sprintf("/%s", packag)
+		}
 
 	} else if len(nSplit) == 2 {
 
