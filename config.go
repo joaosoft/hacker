@@ -10,7 +10,7 @@ import (
 
 // AppConfig ...
 type AppConfig struct {
-	Dependency *DependencyConfig `json:"dependency"`
+	Dependency DependencyConfig `json:"dependency"`
 }
 
 // DependencyConfig ...
@@ -29,9 +29,7 @@ func NewConfig() (*AppConfig, manager.IConfig, error) {
 
 	if err != nil {
 		log.Error(err.Error())
-
-		appConfig.Dependency = &DependencyConfig{}
 	}
 
-	return appConfig, simpleConfig, nil
+	return appConfig, simpleConfig, err
 }

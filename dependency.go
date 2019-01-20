@@ -35,7 +35,7 @@ func NewDependency(options ...DependencyOption) (*Dependency, error) {
 		logger: log,
 		vcs:    vcs,
 		vendor: "vendor",
-		config: config.Dependency,
+		config: &config.Dependency,
 	}
 
 	if service.isLogExternal {
