@@ -22,7 +22,6 @@ type Dependency struct {
 
 func NewDependency(options ...DependencyOption) (*Dependency, error) {
 	config, simpleConfig, err := NewConfig()
-	pm := manager.NewManager(manager.WithRunInBackground(true), manager.WithLogLevel(logger.WarnLevel))
 	log := logger.NewLogDefault("dependency", logger.WarnLevel)
 
 	vcs, err := NewVcs(fmt.Sprintf("%s/%s", os.Getenv("HOME"), CacheRepository), CacheRepositoryConfigFile, ProtocolHTTPS, log)
@@ -32,7 +31,7 @@ func NewDependency(options ...DependencyOption) (*Dependency, error) {
 
 	service := &Dependency{
 		quit:   make(chan int),
-		pm:     pm,
+		pm:     manager.NewManager(manager.WithRunInBackground(true), manager.WithLogLevel(logger.WarnLevel)),
 		logger: log,
 		vcs:    vcs,
 		vendor: "vendor",
