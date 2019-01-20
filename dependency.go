@@ -42,7 +42,9 @@ func NewDependency(options ...DependencyOption) (*Dependency, error) {
 		service.pm.Reconfigure(manager.WithLogger(service.logger))
 	}
 
-	if err == nil {
+	if err != nil {
+		log.Error(err.Error())
+	} else {
 		service.pm.AddConfig("config_app", simpleConfig)
 		level, _ := logger.ParseLevel(config.Dependency.Log.Level)
 		log.Debugf("setting log level to %s", level)

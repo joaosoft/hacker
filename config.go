@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 
-	"github.com/labstack/gommon/log"
-
 	"github.com/joaosoft/manager"
 )
 
@@ -26,10 +24,6 @@ type DependencyConfig struct {
 func NewConfig() (*AppConfig, manager.IConfig, error) {
 	appConfig := &AppConfig{}
 	simpleConfig, err := manager.NewSimpleConfig(fmt.Sprintf("/config/app.%s.json", GetEnv()), appConfig)
-
-	if err != nil {
-		log.Error(err.Error())
-	}
 
 	return appConfig, simpleConfig, err
 }
