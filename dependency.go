@@ -24,6 +24,7 @@ func NewDependency(options ...DependencyOption) (*Dependency, error) {
 	config, simpleConfig, err := NewConfig()
 	pm := manager.NewManager(manager.WithRunInBackground(true), manager.WithLogLevel(logger.WarnLevel))
 	log := logger.NewLogDefault("dependency", logger.WarnLevel)
+
 	vcs, err := NewVcs(fmt.Sprintf("%s/%s", os.Getenv("HOME"), CacheRepository), CacheRepositoryConfigFile, ProtocolHTTPS, log)
 	if err != nil {
 		return nil, err
@@ -47,8 +48,8 @@ func NewDependency(options ...DependencyOption) (*Dependency, error) {
 	} else {
 		service.pm.AddConfig("config_app", simpleConfig)
 		level, _ := logger.ParseLevel(config.Dependency.Log.Level)
-		log.Debugf("setting log level to %s", level)
-		log.Reconfigure(logger.WithLevel(level))
+		service.logger.Debugf("setting log level to %s", level)
+		service.logger.Reconfigure(logger.WithLevel(level))
 	}
 
 	service.Reconfigure(options...)
