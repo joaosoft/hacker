@@ -23,13 +23,15 @@ type DependencyConfig struct {
 }
 
 // NewConfig ...
-func NewConfig() (*DependencyConfig, error) {
+func NewConfig() (*AppConfig, manager.IConfig, error) {
 	appConfig := &AppConfig{}
-	if _, err := manager.NewSimpleConfig(fmt.Sprintf("/config/app.%s.json", GetEnv()), appConfig); err != nil {
+	simpleConfig, err := manager.NewSimpleConfig(fmt.Sprintf("/config/app.%s.json", GetEnv()), appConfig)
+
+	if err != nil {
 		log.Error(err.Error())
 
-		return &DependencyConfig{}, err
+		appConfig.Dependency = &DependencyConfig{}
 	}
 
-	return appConfig.Dependency, nil
+	return appConfig, simpleConfig, nil
 }

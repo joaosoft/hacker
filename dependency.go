@@ -21,6 +21,7 @@ type Dependency struct {
 }
 
 func NewDependency(options ...DependencyOption) (*Dependency, error) {
+	config, simpleConfig, err := NewConfig()
 	pm := manager.NewManager(manager.WithRunInBackground(true), manager.WithLogLevel(logger.WarnLevel))
 	log := logger.NewLogDefault("dependency", logger.WarnLevel)
 	vcs, err := NewVcs(fmt.Sprintf("%s/%s", os.Getenv("HOME"), CacheRepository), CacheRepositoryConfigFile, ProtocolHTTPS, log)
@@ -34,29 +35,18 @@ func NewDependency(options ...DependencyOption) (*Dependency, error) {
 		logger: log,
 		vcs:    vcs,
 		vendor: "vendor",
-		config: &DependencyConfig{},
+		config: config.Dependency,
 	}
 
 	if service.isLogExternal {
 		service.pm.Reconfigure(manager.WithLogger(service.logger))
 	}
 
-	// load configuration File
-	appConfig := &AppConfig{}
-	if simpleConfig, err := manager.NewSimpleConfig(fmt.Sprintf("/config/app.%s.json", GetEnv()), appConfig); err != nil {
-		service.logger.Warn(err)
-	} else if appConfig.Dependency != nil {
+	if err == nil {
 		service.pm.AddConfig("config_app", simpleConfig)
-
-		level, _ := logger.ParseLevel(appConfig.Dependency.Log.Level)
-		service.logger.Debugf("setting log level to %s", level)
-		service.logger.Reconfigure(logger.WithLevel(level))
-
-		service.config = appConfig.Dependency
-		protocol := Protocol(appConfig.Dependency.Protocol)
-		if protocol != "" {
-			service.vcs.protocol = protocol
-		}
+		level, _ := logger.ParseLevel(config.Dependency.Log.Level)
+		log.Debugf("setting log level to %s", level)
+		log.Reconfigure(logger.WithLevel(level))
 	}
 
 	service.Reconfigure(options...)
