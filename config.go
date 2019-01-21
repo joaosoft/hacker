@@ -8,7 +8,7 @@ import (
 
 // AppConfig ...
 type AppConfig struct {
-	Dependency DependencyConfig `json:"dependency"`
+	Dependency *DependencyConfig `json:"dependency"`
 }
 
 // DependencyConfig ...

@@ -35,7 +35,7 @@ func NewDependency(options ...DependencyOption) (*Dependency, error) {
 		logger: log,
 		vcs:    vcs,
 		vendor: "vendor",
-		config: &config.Dependency,
+		config: config.Dependency,
 	}
 
 	if service.isLogExternal {
@@ -44,7 +44,7 @@ func NewDependency(options ...DependencyOption) (*Dependency, error) {
 
 	if err != nil {
 		log.Error(err.Error())
-	} else {
+	} else if config.Dependency != nil {
 		service.pm.AddConfig("config_app", simpleConfig)
 		level, _ := logger.ParseLevel(config.Dependency.Log.Level)
 		service.logger.Debugf("setting log level to %s", level)
