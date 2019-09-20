@@ -1,38 +1,5 @@
 package main
 
 const (
-	CmdDependencyGet    CmdDependency = "get"
-	CmdDependencyUpdate CmdDependency = "update"
-	CmdDependencyReset  CmdDependency = "reset"
-	CmdDependencyAdd    CmdDependency = "add"
-	CmdDependencyRemove CmdDependency = "remove"
-
-	GenImportFile  = "import-gen.yml"
-	LockImportFile = "import-lock.yml"
-
-	CacheRepository           = ".dependency/cache"
-	CacheRepositoryConfigFile = "cache.yml"
-
-	RegexForVendorFiles = `^_vendor_[0-9]{14}$`
-
-	ProtocolSSH   Protocol = "ssh"
-	ProtocolHTTPS Protocol = "https"
-
-	GoogleSourcePath = "go.googlesource.com"
-)
-
-var (
-	excludedPaths = []string{
-		"vendor",
-	}
-
-	packageActions = []*PackageAction{
-		{old: "golang.org/x/net", new: "go.googlesource.com/net"},
-		{old: "golang.org/x/exp", new: "go.googlesource.com/exp"},
-		{old: "golang.org/x", new: "go.googlesource.com"},
-	}
-
-	ignoredPackages = []string{
-		"../",
-	}
+	CommandRun    Command = "run"
 )

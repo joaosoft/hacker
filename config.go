@@ -8,14 +8,12 @@ import (
 
 // AppConfig ...
 type AppConfig struct {
-	Dependency *DependencyConfig `json:"dependency"`
+	Hacker *HackerConfig `json:"hacker"`
 }
 
-// DependencyConfig ...
-type DependencyConfig struct {
-	Path     string `json:"path"`
-	Protocol string `json:"protocol"`
-	Log      struct {
+// HackerConfig ...
+type HackerConfig struct {
+	Log struct {
 		Level string `json:"level"`
 	} `json:"log"`
 }

@@ -9,6 +9,8 @@ jobs:
       install:
         - go get github.com/joaosoft/dependency
         - dependency get
+        - go get github.com/joaosoft/hacker
+          - hacker run
       os: linux
       go: master
       script:

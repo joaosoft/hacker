@@ -5,48 +5,41 @@ import (
 	"github.com/joaosoft/manager"
 )
 
-// DependencyOption ...
-type DependencyOption func(builder *Dependency)
+// HackerOption ...
+type HackerOption func(hacker *Hacker)
 
 // Reconfigure ...
-func (d *Dependency) Reconfigure(options ...DependencyOption) {
+func (d *Hacker) Reconfigure(options ...HackerOption) {
 	for _, option := range options {
 		option(d)
 	}
 }
 
 // WithConfiguration ...
-func WithConfiguration(config *DependencyConfig) DependencyOption {
-	return func(builder *Dependency) {
-		builder.config = config
+func WithConfiguration(config *HackerConfig) HackerOption {
+	return func(hacker *Hacker) {
+		hacker.config = config
 	}
 }
 
 // WithLogger ...
-func WithLogger(logger logger.ILogger) DependencyOption {
-	return func(builder *Dependency) {
-		builder.logger = logger
-		builder.isLogExternal = true
+func WithLogger(logger logger.ILogger) HackerOption {
+	return func(hacker *Hacker) {
+		hacker.logger = logger
+		hacker.isLogExternal = true
 	}
 }
 
 // WithLogLevel ...
-func WithLogLevel(level logger.Level) DependencyOption {
-	return func(builder *Dependency) {
-		builder.logger.SetLevel(level)
+func WithLogLevel(level logger.Level) HackerOption {
+	return func(hacker *Hacker) {
+		hacker.logger.SetLevel(level)
 	}
 }
 
 // WithManager ...
-func WithManager(mgr *manager.Manager) DependencyOption {
-	return func(builder *Dependency) {
-		builder.pm = mgr
-	}
-}
-
-// WithProtocol ...
-func WithProtocol(protocol Protocol) DependencyOption {
-	return func(builder *Dependency) {
-		builder.vcs.protocol = protocol
+func WithManager(mgr *manager.Manager) HackerOption {
+	return func(hacker *Hacker) {
+		hacker.pm = mgr
 	}
 }
