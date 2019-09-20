@@ -10,7 +10,7 @@ jobs:
         - go get github.com/joaosoft/dependency
         - dependency get
         - go get github.com/joaosoft/hacker
-          - hacker run
+        - hacker run
       os: linux
       go: master
       script:

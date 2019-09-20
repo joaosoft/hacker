@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"path"
 
-	errors "github.com/joaosoft/errors"
+	"github.com/joaosoft/errors"
 )
 
 func GetEnv() string {
